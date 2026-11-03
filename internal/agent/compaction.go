@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/amir/tabdl/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
 )
 
 // Compactor summarizes older history when the estimated token count of the

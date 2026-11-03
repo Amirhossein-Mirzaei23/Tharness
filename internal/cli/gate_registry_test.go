@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amir/tabdl/internal/permissions"
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/permissions"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // RED: GateRegistry wraps bash/write/edit in GatedTool per the Gate's

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amir/tabdl/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
 )
 
 func TestResumeToMessagesReconstructsHistory(t *testing.T) {

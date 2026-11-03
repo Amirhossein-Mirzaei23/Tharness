@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/amir/tabdl/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/agent"
 )
 
 // Init starts the textarea blink loop.

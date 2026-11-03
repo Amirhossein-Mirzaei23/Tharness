@@ -1,7 +1,7 @@
 package session
 
 import (
-	"github.com/amir/tabdl/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
 )
 
 // ResumeToMessages reconstructs an ai.Message history from transcript events,

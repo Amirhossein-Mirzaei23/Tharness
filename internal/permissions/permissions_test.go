@@ -4,6 +4,9 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // RED: policy "auto" allows the tool.
@@ -172,9 +175,9 @@ type fakeTool struct {
 	err    error
 }
 
-func (f *fakeTool) Name() string                   { return f.name }
-func (f *fakeTool) Description() string            { return "fake tool for tests" }
-func (f *fakeTool) Parameters() map[string]any     { return nil }
+func (f *fakeTool) Name() string               { return f.name }
+func (f *fakeTool) Description() string        { return "fake tool for tests" }
+func (f *fakeTool) Parameters() map[string]any { return nil }
 func (f *fakeTool) Exec(context.Context, string) (string, error) {
 	f.calls++
 	return f.result, f.err

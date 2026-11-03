@@ -12,9 +12,9 @@ func TestRootCommandOneShotPromptFlag(t *testing.T) {
 	srv := seqServer(t, textSSE)
 
 	dataDir := t.TempDir()
-	t.Setenv("TABDL_BASE_URL", srv.URL)
-	t.Setenv("TABDL_API_KEY", "test-key")
-	t.Setenv("TABDL_DATA_DIR", dataDir)
+	t.Setenv("THARNESS_BASE_URL", srv.URL)
+	t.Setenv("THARNESS_API_KEY", "test-key")
+	t.Setenv("THARNESS_DATA_DIR", dataDir)
 
 	stdout := &bytes.Buffer{}
 	root := NewRootCommand()
@@ -44,9 +44,9 @@ func TestRunSubcommandPromptFlag(t *testing.T) {
 	srv := seqServer(t, textSSE)
 
 	dataDir := t.TempDir()
-	t.Setenv("TABDL_BASE_URL", srv.URL)
-	t.Setenv("TABDL_API_KEY", "test-key")
-	t.Setenv("TABDL_DATA_DIR", dataDir)
+	t.Setenv("THARNESS_BASE_URL", srv.URL)
+	t.Setenv("THARNESS_API_KEY", "test-key")
+	t.Setenv("THARNESS_DATA_DIR", dataDir)
 
 	stdout := &bytes.Buffer{}
 	root := NewRootCommand()

@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amir/tabdl/internal/session"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/session"
 )
 
 func TestSessionsListPrintsIDs(t *testing.T) {
 	dataDir := t.TempDir()
-	t.Setenv("TABDL_DATA_DIR", dataDir)
+	t.Setenv("THARNESS_DATA_DIR", dataDir)
 
 	store, err := session.Open(dataDir)
 	if err != nil {
@@ -39,7 +39,7 @@ func TestSessionsListPrintsIDs(t *testing.T) {
 }
 
 func TestSessionsListEmptyDirOK(t *testing.T) {
-	t.Setenv("TABDL_DATA_DIR", t.TempDir())
+	t.Setenv("THARNESS_DATA_DIR", t.TempDir())
 
 	root := NewRootCommand()
 	out := &bytes.Buffer{}

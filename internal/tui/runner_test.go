@@ -8,7 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/amir/tabdl/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/agent"
 )
 
 // fakeRunner records prompts and replays scripted events on submit.

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // Policy governs how a tool call is approved.
@@ -32,6 +32,9 @@ const (
 	DecisionDeny Decision = "deny"
 	// DecisionAsk requires interactive approval.
 	DecisionAsk Decision = "ask"
+	// DecisionAllowSession approves the call and allows the tool for the
+	// rest of the session ("always allow").
+	DecisionAllowSession Decision = "allow_session"
 )
 
 // Gate resolves per-tool policies for the session. Unknown tools default to
@@ -86,6 +89,23 @@ func (g *Gate) AllowSession(tool string) {
 // compact summary of the arguments, and returns true to allow the call.
 type Asker func(tool, argsSummary string) bool
 
+// Approval is one interactive decision delivered over an approval channel.
+type Approval struct {
+	Decision Decision
+}
+
+// AskerFromChannel returns an Asker that blocks on approvals for each
+// pending decision: allow and allow-session execute the call, deny refuses
+// it. An allow-session decision marks the tool session-approved so later
+// calls run without waiting on the channel (GatedTool.Exec performs the
+// flip; the closure itself has no access to the Gate).
+func AskerFromChannel(approvals chan Approval) Asker {
+	return func(tool, _ string) bool {
+		dec := (<-approvals).Decision
+		return dec == DecisionAllow || dec == DecisionAllowSession
+	}
+}
+
 // GatedTool wraps a tools.Tool and consults a Gate before executing.
 type GatedTool struct {
 	inner tools.Tool
@@ -116,6 +136,9 @@ func (g *GatedTool) Exec(ctx context.Context, argsJSON string) (string, error) {
 			return "", fmt.Errorf("permission denied: %s requires approval and this run is non-interactive", g.inner.Name())
 		}
 		if g.ask(g.inner.Name(), argsJSON) {
+			// An approved interactive call keeps the tool allowed for the
+			// rest of the session ("always allow" via the approval channel).
+			g.gate.AllowSession(g.inner.Name())
 			return g.inner.Exec(ctx, argsJSON)
 		}
 		return "", fmt.Errorf("user denied %s", g.inner.Name())
@@ -124,8 +147,9 @@ func (g *GatedTool) Exec(ctx context.Context, argsJSON string) (string, error) {
 	}
 }
 
-// gatedTools are the tools subject to permission gating (Task 13).
-var gatedTools = []string{"bash", "write", "edit"}
+// gatedTools are the tools subject to permission gating (Task 13). browser
+// launches external processes (the user's browser), so it is gated too.
+var gatedTools = []string{"bash", "write", "edit", "browser"}
 
 // GateRegistry replaces the named gated tools in reg with permission-checked
 // wrappers consulting gate. The Asker is consulted only for "ask" policies

@@ -1,4 +1,4 @@
-// Package cli implements the tabdl command-line interface.
+// Package cli implements the tharness command-line interface.
 package cli
 
 import (
@@ -8,11 +8,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/amir/tabdl/internal/agent"
-	"github.com/amir/tabdl/internal/ai"
-	"github.com/amir/tabdl/internal/config"
-	"github.com/amir/tabdl/internal/session"
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/config"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/session"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // RunOptions configures a one-shot (`-p`) invocation.
@@ -44,9 +44,18 @@ func (o RunOptions) Run(ctx context.Context, stdout io.Writer) error {
 	if o.DataDir != "" {
 		cfg.DataDir = o.DataDir
 	}
-	dataDir := firstNonEmpty(os.Getenv("TABDL_DATA_DIR"), o.DataDir, cfg.DataDir)
-	baseURL := firstNonEmpty(os.Getenv("TABDL_BASE_URL"), cfg.BaseURL, o.BaseURL, "https://api.z.ai/api/paas/v4")
-	apiKey := firstNonEmpty(os.Getenv("TABDL_API_KEY"), o.APIKey, envNamed(cfg.APIKeyEnv))
+	dataDir := firstNonEmpty(os.Getenv("THARNESS_DATA_DIR"), o.DataDir, cfg.DataDir)
+	resolved, err := ai.ResolveProvider(cfg, os.Getenv)
+	if err != nil {
+		return fmt.Errorf("cli: %w", err)
+	}
+	baseURL, apiKey := resolved.BaseURL, resolved.APIKey
+	if o.BaseURL != "" {
+		baseURL = o.BaseURL
+	}
+	if o.APIKey != "" {
+		apiKey = o.APIKey
+	}
 
 	store, err := session.Open(dataDir)
 	if err != nil {
@@ -68,9 +77,10 @@ func (o RunOptions) Run(ctx context.Context, stdout io.Writer) error {
 	registry := o.Tools
 	if registry == nil {
 		registry = tools.NewCoreRegistry()
+		registry.Register(tools.NewBrowserTool(cfg.Browser.Command))
 	}
 
-	loop := &agent.Loop{Provider: provider, Model: cfg.Model, Tools: registry}
+	loop := &agent.Loop{Provider: provider, Model: resolved.Model, Tools: registry}
 
 	_, path, err := store.New()
 	if err != nil {
@@ -150,11 +160,4 @@ func firstNonEmpty(vals ...string) string {
 		}
 	}
 	return ""
-}
-
-func envNamed(name string) string {
-	if name == "" {
-		return ""
-	}
-	return os.Getenv(name)
 }

@@ -1,29 +1,29 @@
-// Package cli defines the tabdl command-line interface.
+// Package cli defines the tharness command-line interface.
 package cli
 
 import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/amir/tabdl/internal/tui"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tui"
 	"github.com/spf13/cobra"
 )
 
-// version is a placeholder until proper versioning is wired up.
-const version = "0.0.0-dev"
+// version is the release version, stamped into `tharness --version`.
+const version = "0.0.1"
 
 // tuiStarter launches the interactive TUI. Tests override this seam to avoid
 // starting a real terminal program.
 var tuiStarter = startTUI
 
 // startTUI is the default tuiStarter; it runs the bubbletea chat program
-// backed by the real agent ChatRunner.
+// backed by the real agent ChatRunner, styled with the configured theme.
 func startTUI() error {
 	runner, err := tui.NewChatRunner("")
 	if err != nil {
 		return err
 	}
-	m := tui.New(newTextarea(), runner)
+	m := tui.New(newTextarea(), runner).WithTheme(runner.Theme())
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	_, err = p.Run()
 	return err
@@ -37,17 +37,17 @@ func newTextarea() textarea.Model {
 	return ta
 }
 
-// NewRootCommand constructs the tabdl root command. When run with -p/--prompt
+// NewRootCommand constructs the tharness root command. When run with -p/--prompt
 // it executes a one-shot agent session; with no arguments it starts the
 // interactive TUI.
 func NewRootCommand() *cobra.Command {
 	root := &cobra.Command{
-		Use:   "tabdl",
-		Short: "tabdl — a single-binary coding-agent CLI harness",
-		Long: `tabdl — a single-binary coding-agent CLI harness.
+		Use:   "tharness",
+		Short: "tharness — a single-binary coding-agent CLI harness",
+		Long: `tharness — a single-binary coding-agent CLI harness.
 
 Run interactively with no arguments, or one-shot with -p:
-  tabdl -p "summarize this repo"`,
+  tharness -p "summarize this repo"`,
 		Version: version,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			prompt, _ := cmd.Flags().GetString("prompt")
@@ -58,18 +58,19 @@ Run interactively with no arguments, or one-shot with -p:
 		},
 	}
 
-	root.PersistentFlags().String("config", "", "path to config file (default: ~/.tabdl/config.yaml)")
+	root.PersistentFlags().String("config", "", "path to config file (default: ~/.tharness/config.yaml)")
 	root.Flags().StringP("prompt", "p", "", "one-shot prompt: run the agent once and print the answer")
 	root.Flags().String("resume", "", "resume a previous session by id (combine with -p)")
 
 	root.AddCommand(newRunCommand())
 	root.AddCommand(newSessionsCommand())
 	root.AddCommand(newChatCommand())
+	root.AddCommand(newSetupCommand())
 
 	return root
 }
 
-// newChatCommand constructs the explicit `tabdl chat` TUI subcommand.
+// newChatCommand constructs the explicit `tharness chat` TUI subcommand.
 func newChatCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "chat",
@@ -81,7 +82,7 @@ func newChatCommand() *cobra.Command {
 	}
 }
 
-// newRunCommand constructs the explicit `tabdl run` subcommand.
+// newRunCommand constructs the explicit `tharness run` subcommand.
 func newRunCommand() *cobra.Command {
 	run := &cobra.Command{
 		Use:   "run",

@@ -18,7 +18,7 @@ func stubTUIStarter(t *testing.T) *[]string {
 	return &calls
 }
 
-// RED: bare `tabdl` (no args) starts the TUI via the seam, not help.
+// RED: bare `tharness` (no args) starts the TUI via the seam, not help.
 func TestBareRootStartsTUI(t *testing.T) {
 	calls := stubTUIStarter(t)
 	root := NewRootCommand()
@@ -32,7 +32,7 @@ func TestBareRootStartsTUI(t *testing.T) {
 	}
 }
 
-// RED: `tabdl chat` starts the TUI via the seam.
+// RED: `tharness chat` starts the TUI via the seam.
 func TestChatSubcommandStartsTUI(t *testing.T) {
 	calls := stubTUIStarter(t)
 	root := NewRootCommand()

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amir/tabdl/internal/session"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/session"
 )
 
 // TestRootResumeFlagSeedsPriorMessages verifies the root --resume flag is
@@ -30,9 +30,9 @@ func TestRootResumeFlagSeedsPriorMessages(t *testing.T) {
 	defer srv.Close()
 
 	dataDir := t.TempDir()
-	t.Setenv("TABDL_BASE_URL", srv.URL)
-	t.Setenv("TABDL_API_KEY", "test-key")
-	t.Setenv("TABDL_DATA_DIR", dataDir)
+	t.Setenv("THARNESS_BASE_URL", srv.URL)
+	t.Setenv("THARNESS_API_KEY", "test-key")
+	t.Setenv("THARNESS_DATA_DIR", dataDir)
 
 	store, err := session.Open(dataDir)
 	if err != nil {

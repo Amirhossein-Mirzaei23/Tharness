@@ -1,6 +1,6 @@
 package agent
 
-import "github.com/amir/tabdl/internal/ai"
+import "github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
 
 // EventKind classifies an agent-loop event.
 type EventKind string

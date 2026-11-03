@@ -25,6 +25,7 @@ func NewCoreRegistry(root ...string) *Registry {
 	reg.Register(NewBashTool(dir, BashOptions{}))
 	reg.Register(NewGlobTool(dir, GlobOptions{}))
 	reg.Register(NewGrepTool(dir, GrepOptions{}))
-	reg.Register(NewTodoTool(filepath.Join(dir, ".tabdl", "todo.json")))
+	reg.Register(NewTodoTool(filepath.Join(dir, ".tharness", "todo.json")))
+	reg.Register(NewBrowserTool(""))
 	return reg
 }

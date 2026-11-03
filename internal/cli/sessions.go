@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/amir/tabdl/internal/config"
-	"github.com/amir/tabdl/internal/session"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/config"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/session"
 	"github.com/spf13/cobra"
 )
 
-// newSessionsCommand constructs `tabdl sessions` with the `list` subcommand.
+// newSessionsCommand constructs `tharness sessions` with the `list` subcommand.
 func newSessionsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sessions",
@@ -19,7 +19,7 @@ func newSessionsCommand() *cobra.Command {
 	return cmd
 }
 
-// newSessionsListCommand constructs `tabdl sessions list`, which prints stored
+// newSessionsListCommand constructs `tharness sessions list`, which prints stored
 // session ids, newest first.
 func newSessionsListCommand() *cobra.Command {
 	return &cobra.Command{
@@ -32,7 +32,7 @@ func newSessionsListCommand() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("cli: load config: %w", err)
 			}
-			dataDir := firstNonEmpty(os.Getenv("TABDL_DATA_DIR"), cfg.DataDir)
+			dataDir := firstNonEmpty(os.Getenv("THARNESS_DATA_DIR"), cfg.DataDir)
 			store, err := session.Open(dataDir)
 			if err != nil {
 				return err

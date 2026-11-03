@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/amir/tabdl/internal/ai"
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 const defaultMaxTurns = 25

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/amir/tabdl/internal/permissions"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/permissions"
 )
 
 // RED: permissions.* YAML keys parse into Config.Permissions.

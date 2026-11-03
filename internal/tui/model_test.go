@@ -9,8 +9,8 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/amir/tabdl/internal/agent"
-	"github.com/amir/tabdl/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
 )
 
 func newTestModel() Model {
@@ -24,8 +24,8 @@ func newTestModel() Model {
 func TestInitialViewShowsPlaceholderAndInput(t *testing.T) {
 	m := newTestModel()
 	view := m.View()
-	if !strings.Contains(view, "tabdl") {
-		t.Errorf("View() = %q, want it to contain %q", view, "tabdl")
+	if !strings.Contains(view, "tharness") {
+		t.Errorf("View() = %q, want it to contain %q", view, "tharness")
 	}
 	if !strings.Contains(view, "Type a message") {
 		t.Errorf("View() = %q, want it to contain the textarea placeholder", view)

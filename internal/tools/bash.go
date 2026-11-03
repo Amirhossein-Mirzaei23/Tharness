@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -34,9 +33,10 @@ const (
 // success (exit 0), matching typical agent-harness semantics — a failing
 // command must not leave the session in a directory the model did not verify.
 //
-// Each command runs in its own process group (Setpgid). On timeout or context
+// Each command runs under the platform shell (sh on Unix, cmd on Windows).
+// On Unix it gets its own process group (Setpgid); on timeout or context
 // cancellation the whole group is killed (negative-pid syscall.Kill) so
-// spawned children die too.
+// spawned children die too. On Windows only the shell process is killed.
 type BashTool struct {
 	root string
 	opts BashOptions
@@ -99,10 +99,8 @@ func (t *BashTool) Exec(ctx context.Context, argsJSON string) (string, error) {
 
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "sh", "-c", args.Command)
+	cmd := newBashCmd(ctx, args.Command)
 	cmd.Dir = dir
-	// Own process group so timeout/cancel can kill the whole tree.
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	// The command's children inherit our output pipe; after the group leader
 	// dies, Wait would block on the pipe until every orphan exits. WaitDelay
 	// bounds that wait so we return promptly and can then kill the group.
@@ -115,10 +113,8 @@ func (t *BashTool) Exec(ctx context.Context, argsJSON string) (string, error) {
 	var out string
 	switch {
 	case ctx.Err() != nil:
-		// Timeout or cancellation: kill the process group (negative pid).
-		if cmd.Process != nil {
-			_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-		}
+		// Timeout or cancellation: kill the whole process tree.
+		killBashTree(cmd)
 		out = fmt.Sprintf("timed out after %s\n%s", timeout, combined.String())
 	case runErr != nil:
 		var exitErr *exec.ExitError

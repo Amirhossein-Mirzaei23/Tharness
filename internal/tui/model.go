@@ -1,4 +1,4 @@
-// Package tui implements the tabdl bubbletea chat interface.
+// Package tui implements the tharness bubbletea chat interface.
 package tui
 
 import (
@@ -8,7 +8,9 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
 
-	"github.com/amir/tabdl/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/config"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/theme"
 )
 
 // textareaPrompt prefixes the input box.
@@ -66,12 +68,14 @@ type Model struct {
 	input   textarea.Model
 	spinner spinner.Model
 	history *viewport.Model
+	styles  theme.Styles
 	width   int
 	height  int
 }
 
 // New returns a chat Model over the given input component. runner may be nil
-// in tests; a nil runner still records submissions but starts no agent.
+// in tests; a nil runner still records submissions but starts no agent. The
+// model starts with the default (dark) theme; call WithTheme to switch.
 func New(input textarea.Model, runner AgentRunner) Model {
 	input.Prompt = textareaPrompt
 	input.Focus()
@@ -82,5 +86,15 @@ func New(input textarea.Model, runner AgentRunner) Model {
 		spinner:   sp,
 		streamIdx: -1,
 		runner:    runner,
+		styles:    theme.StylesFor(config.DefaultTheme),
 	}
+}
+
+// WithTheme returns the model restyled for the named theme; unknown theme
+// names keep the current styling.
+func (m Model) WithTheme(name string) Model {
+	if _, ok := theme.Named(name); ok {
+		m.styles = theme.StylesFor(name)
+	}
+	return m
 }

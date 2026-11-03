@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amir/tabdl/internal/ai"
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // fakeProvider returns scripted Responses, one per Stream call, and records

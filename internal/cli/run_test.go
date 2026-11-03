@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // textSSE is the OpenAI-compatible SSE stream served by the fake provider for
@@ -58,9 +58,9 @@ func TestRunOneShotPrintsFinalTextAndWritesTranscript(t *testing.T) {
 	srv := sseServer(t, textSSE, &auth)
 
 	dataDir := t.TempDir()
-	t.Setenv("TABDL_BASE_URL", srv.URL)
-	t.Setenv("TABDL_API_KEY", "test-key")
-	t.Setenv("TABDL_DATA_DIR", dataDir)
+	t.Setenv("THARNESS_BASE_URL", srv.URL)
+	t.Setenv("THARNESS_API_KEY", "test-key")
+	t.Setenv("THARNESS_DATA_DIR", dataDir)
 
 	opts := RunOptions{Prompt: "say hello"}
 	stdout := &bytes.Buffer{}
@@ -152,9 +152,9 @@ func TestRunOneShotExecutesToolCallAndRecordsResult(t *testing.T) {
 	srv := seqServer(t, toolCallSSE, finalSSE)
 
 	dataDir := t.TempDir()
-	t.Setenv("TABDL_BASE_URL", srv.URL)
-	t.Setenv("TABDL_API_KEY", "test-key")
-	t.Setenv("TABDL_DATA_DIR", dataDir)
+	t.Setenv("THARNESS_BASE_URL", srv.URL)
+	t.Setenv("THARNESS_API_KEY", "test-key")
+	t.Setenv("THARNESS_DATA_DIR", dataDir)
 
 	echo := &fakeTool{name: "echo", result: "ECHOED"}
 	registry := tools.NewRegistry()

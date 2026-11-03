@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amir/tabdl/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
 )
 
 func TestEstimateTokensSumsContentCharsDividedByFour(t *testing.T) {

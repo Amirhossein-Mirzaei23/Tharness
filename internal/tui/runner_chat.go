@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/amir/tabdl/internal/agent"
-	"github.com/amir/tabdl/internal/ai"
-	"github.com/amir/tabdl/internal/config"
-	"github.com/amir/tabdl/internal/session"
-	"github.com/amir/tabdl/internal/tools"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/agent"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/ai"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/config"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/session"
+	"github.com/Amirhossein-Mirzaei23/Tharness/internal/tools"
 )
 
 // ChatRunner is the production AgentRunner: it resolves configuration the
@@ -20,34 +20,28 @@ import (
 type ChatRunner struct {
 	provider ai.Provider
 	model    string
+	theme    string
 	tools    *tools.Registry
 	store    *session.Store
 	path     string
 }
 
 // NewChatRunner resolves config → provider → tools → store. configPath
-// overrides the config file location (empty = default). Base URL and API key
-// follow the one-shot precedence: TABDL_BASE_URL > config > default,
-// TABDL_API_KEY > APIKeyEnv-named env var.
+// overrides the config file location (empty = default). Provider settings
+// follow ai.ResolveProvider precedence: THARNESS_BASE_URL / THARNESS_API_KEY
+// > per-provider config entry > provider env var > legacy flat config.
 func NewChatRunner(configPath string) (*ChatRunner, error) {
 	cfg, err := config.Load(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("tui: load config: %w", err)
 	}
 	dataDir := cfg.DataDir
-	if v := os.Getenv("TABDL_DATA_DIR"); v != "" {
+	if v := os.Getenv("THARNESS_DATA_DIR"); v != "" {
 		dataDir = v
 	}
-	baseURL := os.Getenv("TABDL_BASE_URL")
-	if baseURL == "" {
-		baseURL = cfg.BaseURL
-	}
-	if baseURL == "" {
-		baseURL = "https://api.z.ai/api/paas/v4"
-	}
-	apiKey := os.Getenv("TABDL_API_KEY")
-	if apiKey == "" {
-		apiKey = os.Getenv(cfg.APIKeyEnv)
+	resolved, err := ai.ResolveProvider(cfg, os.Getenv)
+	if err != nil {
+		return nil, fmt.Errorf("tui: %w", err)
 	}
 
 	store, err := session.Open(dataDir)
@@ -59,14 +53,21 @@ func NewChatRunner(configPath string) (*ChatRunner, error) {
 		return nil, err
 	}
 
+	registry := tools.NewCoreRegistry()
+	registry.Register(tools.NewBrowserTool(cfg.Browser.Command))
+
 	return &ChatRunner{
-		provider: &ai.OpenAI{BaseURL: baseURL, APIKey: apiKey},
-		model:    cfg.Model,
-		tools:    tools.NewCoreRegistry(),
+		provider: &ai.OpenAI{BaseURL: resolved.BaseURL, APIKey: resolved.APIKey},
+		model:    resolved.Model,
+		theme:    cfg.Theme,
+		tools:    registry,
 		store:    store,
 		path:     path,
 	}, nil
 }
+
+// Theme returns the configured TUI theme name.
+func (r *ChatRunner) Theme() string { return r.theme }
 
 // Run starts one agent run; implements tui.AgentRunner. Events are fed to the
 // returned channel; the channel is closed when the run finishes. The returned

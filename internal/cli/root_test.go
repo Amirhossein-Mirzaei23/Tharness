@@ -13,8 +13,8 @@ func TestNewRootCommand(t *testing.T) {
 	if root == nil {
 		t.Fatal("NewRootCommand() returned nil")
 	}
-	if root.Use != "tabdl" {
-		t.Errorf("Use = %q, want %q", root.Use, "tabdl")
+	if root.Use != "tharness" {
+		t.Errorf("Use = %q, want %q", root.Use, "tharness")
 	}
 	if root.Version == "" {
 		t.Error("Version is empty; want a version placeholder")
